@@ -1,0 +1,5 @@
+steps:
+- id: quick
+- id: slow
+- id: incomplete
+- id: failure
