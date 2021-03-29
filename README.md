@@ -129,3 +129,10 @@ The full set of support environment variables are:
   pretty step names. You will need to ensure the directory is mounted into the
   background container. Steps will be "step_1" to "step_n" in the commit status
   if a build manifest cannot be read.
+
+# Contributing
+
+Please feel free to open issues and pull requests on this repository. If you
+wish to suggest a code change, please ensure the behaviour is tests in `go
+test`. The tests are already set up with a toy Docker daemon you can mock events
+from; and a GitHub API that will record the updates sent.
