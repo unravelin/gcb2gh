@@ -46,8 +46,7 @@ The following example build step runs gcb2gh with the configuration envvars:
 
 - GITHUB_USER and GITHUB_REPO: Pointing to github.com/unravelin/gcb2gh.
 
-- GITHUB_TOKEN: Read from a github-token secret. Note the use of $$ when copying
-  the value.
+- GITHUB_TOKEN: Read from a github-token secret.
 
 - BUILD_MANIFEST: Pointing to /workspace/cloudbuild.yaml so that we can read the
   step IDs. Note that we have to explicitly mount /workspace for gcb2gh as it is
@@ -77,7 +76,7 @@ steps:
       "--mount", "type=bind,source=/workspace,target=/workspace,bind-propagation=rprivate",
       "--env", "BUILD_MANIFEST=/workspace/cloudbuild.yaml",
       # Configure: the GitHub repo.
-      "--env", "GITHUB_TOKEN=$$GITHUB_TOKEN",
+      "--env", "GITHUB_TOKEN",
       "--env", "GITHUB_USER=unravelin",
       "--env", "GITHUB_REPO=gcb2gh",
       # GCB specifics.
