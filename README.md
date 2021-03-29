@@ -1,5 +1,7 @@
 # gcb2gh
 
+![image](https://user-images.githubusercontent.com/408401/112832948-f0d1c580-908d-11eb-9e78-04433bdf3884.png)
+
 If you're both a Google Cloud Build and GitHub user then you will either be:
 
 - resigned to the "summary" and multiple clicks of using Google Cloud Build's
