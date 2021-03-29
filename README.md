@@ -140,3 +140,7 @@ Please feel free to open issues and pull requests on this repository. If you
 wish to suggest a code change, please ensure the behaviour is tested in `go
 test`. The tests are already set up with a toy Docker daemon you can mock events
 from; and a GitHub API that will record the updates sent.
+
+Please ⭐ star this [cloud build feature
+request](https://issuetracker.google.com/issues/183851546) which would mean
+gcb2gh doesn't have to parse the build manifest itself.
