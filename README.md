@@ -37,7 +37,7 @@ build step:
 ```
 git clone https://github.com/unravelin/gcb2gh
 cd gcb2gh
-gcloud --project MY-PROJECT builds submit . --substitution _GCR_HOST=gcr.io
+gcloud --project MY-PROJECT builds submit . --substitutions _GCR_HOST=gcr.io
 ```
 
 ### 2. Add the gcb2gh build step to your build manifest
