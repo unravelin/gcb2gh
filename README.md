@@ -31,13 +31,13 @@ cloud-builders](https://github.com/GoogleCloudPlatform/cloud-builders-community)
 you must build and host your own gcb2gh container image on the Google Container
 Registry. To do so, clone this repo and submit the directory as a build.
 
-The following will create the gcr.io/$PROJECT_ID/gcb2gh where $PROJECT_ID is
-`gcloud config get-value project`.
+The following will create the image gcr.io/MY-PROJECT/gcb2gh for you to use in a
+build step:
 
 ```
 git clone https://github.com/unravelin/gcb2gh
 cd gcb2gh
-gcloud builds submit . --config=cloudbuild.yaml
+gcloud --project MY-PROJECT builds submit . --config=cloudbuild.yaml
 ```
 
 ### 2. Add the gcb2gh build step to your build manifest
