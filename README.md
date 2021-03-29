@@ -132,7 +132,7 @@ The full set of support environment variables are:
   background container. Steps will be "step_1" to "step_n" in the commit status
   if a build manifest cannot be read.
 
-# Contributing
+## Contributing
 
 Please feel free to open issues and pull requests on this repository. If you
 wish to suggest a code change, please ensure the behaviour is tested in `go
