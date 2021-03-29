@@ -24,10 +24,6 @@ statuses](https://docs.github.com/en/rest/reference/repos#create-a-commit-status
 
 ## Usage
 
-The below instructions point to gcr.io, rather than us.gcr.io or eu.gcr.io.
-You'll need to alter the cloudbuild.yaml and build step if you wish to use a
-particular gcr.io region.
-
 ### 1. Build your own gcb2gh image
 
 Like with the [community
@@ -41,7 +37,7 @@ build step:
 ```
 git clone https://github.com/unravelin/gcb2gh
 cd gcb2gh
-gcloud --project MY-PROJECT builds submit . --config=cloudbuild.yaml
+gcloud --project MY-PROJECT builds submit . --substitution _GCR_HOST=gcr.io
 ```
 
 ### 2. Add the gcb2gh build step to your build manifest
@@ -60,6 +56,9 @@ The following example build step runs gcb2gh with the configuration envvars:
 - BUILD_ID, PROJECT_ID, and COMMIT_SHA: all taken from [built-in
   substitutions](https://cloud.google.com/build/docs/configuring-builds/substitute-variable-values)
   of the same name.
+
+If you built your gcb2gh image to a different project or gcr.io host, be sure
+that the last line is pointing to the correct place.
 
 ```yaml
 availableSecrets:

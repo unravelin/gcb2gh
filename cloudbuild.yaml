@@ -1,6 +1,6 @@
 steps:
 - id: build
   name: "gcr.io/cloud-builders/docker"
-  args: [ "build", "-t", "gcr.io/$PROJECT_ID/gcb2gh", "." ]
+  args: [ "build", "-t", "${_GCR_HOST:-gcr.io}/$PROJECT_ID/gcb2gh", "." ]
 images:
-- "gcr.io/$PROJECT_ID/gcb2gh"
+- "${_GCR_HOST:-gcr.io}/$PROJECT_ID/gcb2gh"
