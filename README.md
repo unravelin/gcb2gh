@@ -7,20 +7,20 @@ If you're both a Google Cloud Build and GitHub user then you will either be:
 - manually making API calls to GitHub from within build steps to provide more
   detail.
 
-gcb2gh solves this with one build step at the start of your cloudbuild.yaml
-which sends status updates to GitHub for each step that starts or stops in
-Google Cloud Build. The status links directly to the running or failed steps.
+gcb2gh solves this with a build step in your cloudbuild.yaml which sends status
+updates to GitHub for each step that starts or stops in Google Cloud Build. The
+status links directly to the running or failed steps.
+
+gcb2gh runs in a detached Docker container - putting itself in the background -
+and connects to the [Docker API event
+stream](https://docs.docker.com/engine/api/v1.41/#operation/SystemEvents) which
+it translates into updates to [GitHub repo
+statuses](https://docs.github.com/en/rest/reference/repos#create-a-commit-status).
 
 At ravelin.com (github.com/unravelin) we use gcb2gh alongside the [GCB GitHub
 app](https://github.com/marketplace/google-cloud-build), which is able to report
 when a build fails to start (such as with an invalid build YAML) or when a build
 gets cancelled. gcb2gh runs inside the build so cannot tell you this.
-
-gcb2gh is designed to be run in a detached Docker container - essentially
-putting itself in the background - and connects to the [Docker API event
-stream](https://docs.docker.com/engine/api/v1.41/#operation/SystemEvents) which
-it translates into updates to [GitHub repo
-statuses](https://docs.github.com/en/rest/reference/repos#create-a-commit-status).
 
 ## Usage
 
@@ -57,7 +57,10 @@ The following example build step runs gcb2gh with the configuration envvars:
   of the same name.
 
 If you built your gcb2gh image to a different project or gcr.io host, be sure
-that the last line is pointing to the correct place.
+that the last line is pointing to the correct image.
+
+Placing the gcb2gh step at the end ensures we don't cause other steps to wait
+while the gcb2gh Docker image is downloaded.
 
 ```yaml
 availableSecrets:
@@ -66,19 +69,22 @@ availableSecrets:
     env: 'GITHUB_TOKEN'
 
 steps:
+  ...
+
+  # At the end, to ensure we don't block other steps.
   - id: gcb2gh
     waitFor: ["-"]
     name: "gcr.io/cloud-builders/docker"
     secretEnv: [GITHUB_TOKEN]
     args: [
       "run", "--name", "gcb2gh", "--detach",
-      # Configure: the build manifest.
-      "--mount", "type=bind,source=/workspace,target=/workspace,bind-propagation=rprivate",
-      "--env", "BUILD_MANIFEST=/workspace/cloudbuild.yaml",
       # Configure: the GitHub repo.
       "--env", "GITHUB_TOKEN",
       "--env", "GITHUB_USER=unravelin",
       "--env", "GITHUB_REPO=gcb2gh",
+      # Configure: the build manifest.
+      "--mount", "type=bind,source=/workspace,target=/workspace,bind-propagation=rprivate",
+      "--env", "BUILD_MANIFEST=/workspace/cloudbuild.yaml",
       # GCB specifics.
       "--env", "BUILD_ID=$BUILD_ID",
       "--env", "PROJECT_ID=$PROJECT_ID",
@@ -86,21 +92,14 @@ steps:
       "--mount", "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,bind-propagation=rprivate",
       "gcr.io/$PROJECT_ID/gcb2gh",
     ]
-```
 
-### 3. Debug with an extra build step
-
-If you're not seeing status updates on your Pull Request, there might be a configuration error, but you won't see any of the logs that gcb2gh spits out because it's running in the background. Create an extra build step at the end of your cloudbuild.yaml:
-
-```yaml
-steps:
-  ...
+  # Optional step to debug gcb2gh.
   - id: gcb2gh_logs
     name: "gcr.io/cloud-builders/docker"
     args: [logs, gcb2gh]
 ```
 
-### 4. Configure further as needed
+### 3. Configure further as needed
 
 The full set of support environment variables are:
 
@@ -126,6 +125,7 @@ The full set of support environment variables are:
 - STATUS_CONTEXT: The title given to the Commit Status at the bottom of PRs.
   Defaults to "gcb".
 
-- BUILD_MANIFEST: The filepath of the GCB build manifest. You will need to
-  ensure the directory is mounted into the background container. Optional, but
-  steps will be "step_1" to "step_n" if unavailable.
+- BUILD_MANIFEST: The filepath of the GCB build manifest which we read to get
+  pretty step names. You will need to ensure the directory is mounted into the
+  background container. Steps will be "step_1" to "step_n" in the commit status
+  if a build manifest cannot be read.
