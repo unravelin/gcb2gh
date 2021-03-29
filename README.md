@@ -49,7 +49,8 @@ The following example build step runs gcb2gh with the configuration envvars:
 
 - GITHUB_USER and GITHUB_REPO: Pointing to github.com/unravelin/gcb2gh.
 
-- GITHUB_TOKEN: Read from a github-token secret.
+- GITHUB_TOKEN: Read from a github-token secret. The token should have a
+  `repo:status` scope.
 
 - BUILD_MANIFEST: Pointing to /workspace/cloudbuild.yaml so that we can read the
   step IDs. Note that we have to explicitly mount /workspace for gcb2gh as it is
