@@ -5,7 +5,8 @@
 If you're both a Google Cloud Build and GitHub user then you will either be:
 
 - resigned to the "summary" and multiple clicks of using Google Cloud Build's
-  GitHub app; or
+  GitHub app;
+- running a cloud function to watch for build results; and/or
 - manually making API calls to GitHub from within build steps to provide more
   detail.
 
