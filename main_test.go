@@ -67,8 +67,8 @@ func TestOKManifest(t *testing.T) {
 			{TimeNano: 80 * ms, Type: "container", Action: "start", Actor: dockerActor{Attributes: dockerAttr{Name: "step_3"}}},
 			{TimeNano: 10_200 * ms, Type: "container", Action: "die", Actor: dockerActor{Attributes: dockerAttr{Name: "step_1", ExitCode: "0"}}},
 			{TimeNano: 10_300 * ms, Type: "container", Action: "die", Actor: dockerActor{Attributes: dockerAttr{Name: "step_3", ExitCode: "1"}}},
-			{TimeNano: 10_301 * ms, Type: "container", Action: "kill", Actor: dockerActor{Attributes: dockerAttr{Name: "step_2", Signal: "9"}}},
-			{TimeNano: 10_302 * ms, Type: "container", Action: "die", Actor: dockerActor{Attributes: dockerAttr{Name: "step_2", ExitCode: "1"}}},
+			{TimeNano: 10_400 * ms, Type: "container", Action: "kill", Actor: dockerActor{Attributes: dockerAttr{Name: "step_2", Signal: "9"}}},
+			{TimeNano: 10_401 * ms, Type: "container", Action: "die", Actor: dockerActor{Attributes: dockerAttr{Name: "step_2", ExitCode: "1"}}},
 		},
 	})
 	exp := []commitStatus{
