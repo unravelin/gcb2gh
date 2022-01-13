@@ -120,6 +120,21 @@ func run(ctx context.Context) (err error) {
 			steps[s.num] = s
 			log.Printf("GCB step: %#v.", s)
 
+			// If this build step was killed, mark anything still running as
+			// cancelled. This would happen anyway - we'd see cancellations
+			// coming from Docker - but we want the first failure to be our last
+			// update to GitHub so that it doesn't send many slack messages.
+			if s.status == gcbStatusError {
+				for n, step := range steps {
+					if step.status != gcbStatusRunning {
+						continue
+					}
+					step.status = gcbStatusCancelled
+					step.endNano = s.endNano
+					steps[n] = step
+				}
+			}
+
 			// Schedule an update to GitHub, if nothing else happens first.
 			// Debounces the initial requests.
 			if !kick.Stop() {
@@ -150,6 +165,10 @@ func run(ctx context.Context) (err error) {
 			log.Print("GH updated.")
 		}
 
+		// Error.
+		if gh.State == ghCommitStateError {
+			return err
+		}
 		// Cancellation.
 		if err := ctx.Err(); err != nil {
 			return err
@@ -338,10 +357,10 @@ func gcb2gh(build buildContext, steps map[int]gcbStep, numSteps int) ghStatusUpd
 
 	// Convert build status to github status.
 	s0 := st[0]
-	var commitState string
+	var commitState ghCommitState
 	switch s0.status {
 	case gcbStatusError:
-		commitState = "error"
+		commitState = ghCommitStateError
 	case gcbStatusDone:
 		if numSteps == 0 || len(st) == numSteps {
 			// If the most recent step is done, we can perhaps assume that we're
@@ -350,12 +369,12 @@ func gcb2gh(build buildContext, steps map[int]gcbStep, numSteps int) ghStatusUpd
 			// step starts, but the debouncing in run() should make it very
 			// unlikely that we send a success on anything other than the last
 			// step.
-			commitState = "success"
+			commitState = ghCommitStateSuccess
 			break
 		}
 		fallthrough
 	case gcbStatusRunning:
-		commitState = "pending"
+		commitState = ghCommitStatePending
 	}
 
 	// Link to the build and directly to the first step in our sorted list,
@@ -372,6 +391,14 @@ func gcb2gh(build buildContext, steps map[int]gcbStep, numSteps int) ghStatusUpd
 		TargetURL:   target,
 	}
 }
+
+type ghCommitState string
+
+const (
+	ghCommitStateError   = "error"
+	ghCommitStateSuccess = "success"
+	ghCommitStatePending = "pending"
+)
 
 func updateGitHub(build buildContext, status ghStatusUpdate) error {
 	// Build the request.
@@ -504,10 +531,10 @@ type dockerAttr struct {
 }
 
 type ghStatusUpdate struct {
-	State       string `json:"state,omitempty"`
-	TargetURL   string `json:"target_url,omitempty"`
-	Description string `json:"description,omitempty"`
-	Context     string `json:"context,omitempty"`
+	State       ghCommitState `json:"state,omitempty"`
+	TargetURL   string        `json:"target_url,omitempty"`
+	Description string        `json:"description,omitempty"`
+	Context     string        `json:"context,omitempty"`
 }
 
 // newGHStatusUpdateReq returns an authenticated *http.Request to set the
