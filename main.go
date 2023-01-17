@@ -3,8 +3,7 @@
 // the GitHub Commit Status describing which steps are running, errored or done.
 // The status check links directly to the build or first erroring build step.
 //
-// For example usage in GCB see
-// https://github.com/unravelin/google-cloud-build-tools/tree/v0/cmd/gcb2gh
+// For example usage in GCB see https://github.com/unravelin/gcb2gh.
 package main
 
 import (
