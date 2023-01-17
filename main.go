@@ -133,6 +133,16 @@ func run(ctx context.Context) (err error) {
 				}
 			}
 
+			// If we think we're done, send the update as quickly as we can.
+			// The process is about to be killed.
+			if s.status == gcbStatusError || s.status == gcbStatusDone {
+				if !kick.Stop() {
+					<-kick.C
+				}
+				kick.Reset(10 * time.Second)
+				break
+			}
+
 			// Schedule an update to GitHub, if nothing else happens first.
 			// Debounces the initial requests.
 			if !kick.Stop() {
