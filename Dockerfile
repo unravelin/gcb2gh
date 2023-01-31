@@ -1,4 +1,4 @@
-FROM gcr.io/cloud-builders/go AS build
+FROM golang:1.19-alpine AS build
 ADD ./ /src
 RUN cd /src && CGO_ENABLED=0 go build -o /bin/gcb2gh .
 
