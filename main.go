@@ -50,6 +50,7 @@ func run(ctx context.Context) (err error) {
 		Docker: os.Getenv("DOCKER_HOST"),
 
 		Project:  os.Getenv("PROJECT_ID"),
+		Region:   os.Getenv("LOCATION"), // [sic]
 		ID:       os.Getenv("BUILD_ID"),
 		Manifest: os.Getenv("BUILD_MANIFEST"),
 
@@ -60,6 +61,7 @@ func run(ctx context.Context) (err error) {
 		SHA:     os.Getenv("COMMIT_SHA"),
 		Context: os.Getenv("STATUS_CONTEXT"),
 	}
+
 	if build.Token == "" {
 		return errors.New(`envvar GITHUB_TOKEN ("user:token", ":token" or "token") is required`)
 	}
@@ -74,6 +76,10 @@ func run(ctx context.Context) (err error) {
 	}
 	if build.Docker == "" {
 		build.Docker = "unix:///var/run/docker.sock"
+	}
+	if build.Region == "" {
+		log.Println("Region not found: setting to 'global'.")
+		build.Region = "global"
 	}
 	if build.GitHub == "" {
 		build.GitHub = "https://api.github.com"
@@ -379,7 +385,7 @@ func gcb2gh(build buildContext, steps map[int]gcbStep, numSteps int) ghStatusUpd
 
 	// Link to the build and directly to the first step in our sorted list,
 	// which will always be an error if a step failed.
-	target := "https://console.cloud.google.com/cloud-build/builds/" + url.PathEscape(build.ID)
+	target := "https://console.cloud.google.com/cloud-build/builds;region=" + build.Region + "/" + url.PathEscape(build.ID)
 	target += ";step=" + strconv.Itoa(s0.num)
 	target += "?project=" + url.QueryEscape(build.Project)
 
@@ -466,6 +472,7 @@ type buildContext struct {
 	Docker string
 
 	Project  string
+	Region   string
 	ID       string
 	Manifest string
 
