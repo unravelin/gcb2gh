@@ -1,8 +1,8 @@
-FROM golang:1.19-alpine AS build
+FROM golang:1.22.0-alpine3.19 AS build
 ADD ./ /src
-RUN cd /src && CGO_ENABLED=0 go build -o /bin/gcb2gh .
+RUN cd /src && go build -ldflags="-s" -o /bin/gcb2gh .
 
 FROM scratch
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /bin/gcb2gh /gcb2gh
-ENTRYPOINT [ "/gcb2gh" ]
+ENTRYPOINT ["/gcb2gh"]
