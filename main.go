@@ -3,8 +3,7 @@
 // the GitHub Commit Status describing which steps are running, errored or done.
 // The status check links directly to the build or first erroring build step.
 //
-// For example usage in GCB see
-// https://github.com/unravelin/google-cloud-build-tools/tree/v0/cmd/gcb2gh
+// For example usage in GCB see https://github.com/unravelin/gcb2gh.
 package main
 
 import (
@@ -14,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -141,6 +139,16 @@ func run(ctx context.Context) (err error) {
 				}
 			}
 
+			// If we think we're done, send the update as quickly as we can.
+			// The process is about to be killed.
+			if s.status == gcbStatusError || s.status == gcbStatusDone {
+				if !kick.Stop() {
+					<-kick.C
+				}
+				kick.Reset(10 * time.Second)
+				break
+			}
+
 			// Schedule an update to GitHub, if nothing else happens first.
 			// Debounces the initial requests.
 			if !kick.Stop() {
@@ -262,10 +270,10 @@ func dockerUpdates(ctx context.Context, dockerHost string, updates chan<- gcbSte
 		switch err {
 		case nil:
 			// Continue.
-		default:
-			return fmt.Errorf("decoding event: %w", err)
 		case io.EOF:
 			return nil
+		default:
+			return fmt.Errorf("decoding event: %w", err)
 		}
 
 		// Filter for step container events.
@@ -425,7 +433,7 @@ func updateGitHub(build buildContext, status ghStatusUpdate) error {
 		b, _ := httputil.DumpResponse(res, true)
 		return fmt.Errorf("%s response from github:\n%s", res.Status, b)
 	}
-	if _, err := io.Copy(ioutil.Discard, res.Body); err != nil {
+	if _, err := io.Copy(io.Discard, res.Body); err != nil {
 		return fmt.Errorf("discarding github response body: %w", err)
 	}
 	return nil
