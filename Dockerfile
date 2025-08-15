@@ -1,4 +1,4 @@
-FROM golang:1.22.0-alpine3.19 AS build
+FROM golang:1.25.0-alpine3.22 AS build
 ADD ./ /src
 RUN cd /src && go build -ldflags="-s" -o /bin/gcb2gh .
 
