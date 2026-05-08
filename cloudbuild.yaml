@@ -1,8 +1,0 @@
-substitutions:
-    _GCR_HOST: gcr.io
-steps:
-- id: build
-  name: "gcr.io/cloud-builders/docker"
-  args: [ "build", "-t", "$_GCR_HOST/$PROJECT_ID/gcb2gh", "." ]
-images:
-- "$_GCR_HOST/$PROJECT_ID/gcb2gh"
