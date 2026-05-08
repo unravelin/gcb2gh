@@ -1,4 +1,4 @@
-FROM golang:1.26.1-alpine3.23 AS build
+FROM docker.io/golang:1.26.3-alpine3.23 AS build
 ADD ./ /src
 RUN cd /src && go build -ldflags="-s" -o /bin/gcb2gh .
 
