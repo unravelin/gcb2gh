@@ -37,12 +37,12 @@ func TestOK(t *testing.T) {
 		},
 	})
 	exp := []commitStatus{
-		{Context: "gcb", State: "success", Description: "Done: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=0?project=gcb-project"},
-		{Context: "gcb", State: "pending", Description: "Running: step_2, step_1; Done: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=2?project=gcb-project"},
-		{Context: "gcb", State: "pending", Description: "Running: step_3, step_2, step_1; Done: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=3?project=gcb-project"},
-		{Context: "gcb", State: "pending", Description: "Running: step_3 10s, step_2 10s, step_1 10s; Done: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=3?project=gcb-project"},
-		{Context: "gcb", State: "pending", Description: "Running: step_3 10s, step_2 10s; Done: step_1 10s, step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=3?project=gcb-project"},
-		{Context: "gcb", State: "error", Description: "Error: step_3 10s; Cancelled: step_2 10s; Done: step_1 10s, step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=3?project=gcb-project"},
+		{Context: "gcb", State: "success", Description: "Done: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=0?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Running: step_2, step_1; Done: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=2?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Running: step_3, step_2, step_1; Done: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=3?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Running: step_3 10s, step_2 10s, step_1 10s; Done: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=3?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Running: step_3 10s, step_2 10s; Done: step_1 10s, step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=3?project=gcb-project"},
+		{Context: "gcb", State: "error", Description: "Error: step_3 10s; Cancelled: step_2 10s; Done: step_1 10s, step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=3?project=gcb-project"},
 	}
 	if diff := cmp.Diff(exp, res.statuses); diff != "" {
 		t.Errorf("Expected GitHub updates (-) but got (+):\n%s", diff)
@@ -72,12 +72,12 @@ func TestOKManifest(t *testing.T) {
 		},
 	})
 	exp := []commitStatus{
-		{Context: "gcb", State: "pending", Description: "Done: quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=0?project=gcb-project"},
-		{Context: "gcb", State: "pending", Description: "Running: incomplete, slow; Done: quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=2?project=gcb-project"},
-		{Context: "gcb", State: "pending", Description: "Running: failure, incomplete, slow; Done: quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=3?project=gcb-project"},
-		{Context: "gcb", State: "pending", Description: "Running: failure 10s, incomplete 10s, slow 10s; Done: quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=3?project=gcb-project"},
-		{Context: "gcb", State: "pending", Description: "Running: failure 10s, incomplete 10s; Done: slow 10s, quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=3?project=gcb-project"},
-		{Context: "gcb", State: "error", Description: "Error: failure 10s; Cancelled: incomplete 10s; Done: slow 10s, quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=3?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Done: quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=0?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Running: incomplete, slow; Done: quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=2?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Running: failure, incomplete, slow; Done: quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=3?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Running: failure 10s, incomplete 10s, slow 10s; Done: quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=3?project=gcb-project"},
+		{Context: "gcb", State: "pending", Description: "Running: failure 10s, incomplete 10s; Done: slow 10s, quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=3?project=gcb-project"},
+		{Context: "gcb", State: "error", Description: "Error: failure 10s; Cancelled: incomplete 10s; Done: slow 10s, quick", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=3?project=gcb-project"},
 	}
 	if diff := cmp.Diff(exp, res.statuses); diff != "" {
 		t.Errorf("Expected GitHub updates (-) but got (+):\n%s", diff)
@@ -93,7 +93,7 @@ func TestContextName(t *testing.T) {
 		},
 	})
 	exp := []commitStatus{
-		{Context: "gcb-test", State: "pending", Description: "Running: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds/build-123;step=0?project=gcb-project"},
+		{Context: "gcb-test", State: "pending", Description: "Running: step_0", TargetURL: "https://console.cloud.google.com/cloud-build/builds;region=global/build-123;step=0?project=gcb-project"},
 	}
 	if diff := cmp.Diff(exp, res.statuses); diff != "" {
 		t.Errorf("Expected GitHub updates (-) but got (+):\n%s", diff)
